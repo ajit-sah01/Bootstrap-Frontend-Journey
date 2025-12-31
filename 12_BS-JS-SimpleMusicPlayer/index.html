@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Music Player</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .music-player {
+            max-width: 300px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        .thumbnail {
+            width: 200px;
+            height: 200px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 50px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn-control {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+         .song-title {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="music-player card p-5">
+            <div class="thumbnail">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="song-title">
+                <span id="current-song-title">Unknown Song</span>
+            </div>
+            <audio id="audio-player" src=""></audio>
+
+            <div class="controls">
+                <button class="btn btn-outline-secondary btn-control" id="prev-btn">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button class="btn btn-primary btn-control" id="play-pause-btn">
+                    <i class="fas fa-play"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-control" id="next-btn">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get references to HTML elements
+        const audioPlayer = document.getElementById('audio-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const songTitleDisplay = document.getElementById('current-song-title');
+        const thumbnail = document.querySelector('.thumbnail'); // Added for changing image
+
+        // List of songs (relative paths to your audio files)
+        const songs = [
+            "1.mp3",
+            "2.mp3",
+            "3.mp3",
+            "4.mp3",
+            "5.mp3"
+        ];
+
+        // List of song titles, matching the order of the files
+        const songTitles = [
+            "Song 1 - Title",
+            "Song 2 - Title",
+            "Song 3 - Title",
+            "Song 4 - Title",
+            "Song 5 - Title"
+        ];
+        const thumbnailImages = [
+            "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D",
+            "https://images.unsplash.com/photo-1560674457-12073ed6fae6?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2FtfGVufDB8fDB8fHww",
+            "https://media.istockphoto.com/id/136324428/photo/taking-picture.jpg?s=612x612&w=0&k=20&c=pqEPpZh8KcAULq-DVzpIEPWhV3hLLs3KK0FxBsbyZz8=",
+            "https://media.istockphoto.com/id/535726827/photo/beautiful-young-woman-taking-photos-with-vintage-film-camera.jpg?s=612x612&w=0&k=20&c=apwnhYSzSZ6Sk3OoMhTz4zgUkPnCm1v1KTUdjboI0_g="
+        ];
+
+        // Initialize song index
+        let currentSongIndex = 0;
+        let isPlaying = false;
+
+        // Load and play the initial song
+        function loadSong(index) {
+            audioPlayer.src = songs[index];
+            audioPlayer.load(); // Important: Load the audio
+            songTitleDisplay.textContent = songTitles[index];
+            // Change thumbnail image
+            thumbnail.innerHTML = `<img src="${thumbnailImages[index]}" alt="Thumbnail" style="width: 100%; height: 100%; border-radius: 10px;">`;
+
+            if (isPlaying) {
+                audioPlayer.play();
+            }
+        }
+
+        // Play/Pause button functionality
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audioPlayer.pause();
+                isPlaying = false;
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>'; // Change icon
+            } else {
+                audioPlayer.play();
+                isPlaying = true;
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>'; // Change icon
+            }
+        });
+
+        // Next button functionality
+        nextBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length; // Loop through songs
+            loadSong(currentSongIndex);
+        });
+
+        // Previous button functionality
+        prevBtn.addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length; // Handle negative index
+            loadSong(currentSongIndex);
+        });
+
+        // Event listener for when the current song finishes
+        audioPlayer.addEventListener('ended', () => {
+            nextBtn.click(); // Simulate a click on the next button to play the next song
+        });
+
+        // Load the first song when the page loads
+        loadSong(currentSongIndex);
+    </script>
+</body>
+</html>
